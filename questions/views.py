@@ -34,8 +34,15 @@ def decision_tree_view(request, id):
         # Process the user's answer and redirect to the next node
         if request.POST.get('answer') == 'Yes':
             next_node_id = node.yes_node_id
-        else:
+        elif request.POST.get('answer') == 'No':
             next_node_id = node.no_node_id
+        elif request.POST.get('answer') == '1':
+            next_node_id = node.one_node_id
+        elif request.POST.get('answer') == '2':
+            next_node_id = node.two_node_id
+        elif request.POST.get('answer') == 'More than 2':
+            next_node_id = node.moreThanTwo_node_id
+
         return redirect('questions:decision_tree', id=next_node_id)
 
     return render(request, 'questions/form.html', {'node': node})

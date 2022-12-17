@@ -8,13 +8,22 @@
 </form> -->
 <div class="question">
     <h2>{{ node.question }}</h2>
-
-    <form method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="id" value="{{ node.pk }}">
-        <input type="submit" name="answer" value="Yes">
-        <input type="submit" name="answer" value="No">
-    </form>
+    {% if node.no_node_id or node.yes_node_id %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ node.pk }}">
+            <input type="submit" name="answer" value="Yes">
+            <input type="submit" name="answer" value="No">
+        </form>
+    {% elif node.one_node_id or node.two_node_id or node.moreThanTwo_node_id %}    
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ node.pk }}">
+            <input type="submit" name="answer" value="1">
+            <input type="submit" name="answer" value="2">
+            <input type="submit" name="answer" value="More than 2">
+        </form>
+    {% endif %}
 </div>
 
 <!-- <h3>{{ root_node.question }}</h1>
