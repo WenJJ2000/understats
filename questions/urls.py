@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.urls import include, path
-from questions.views import question_view
+from questions.views import decision_tree_view
 
 app_name = "questions"
 urlpatterns = [
-    path('',question_view,name="question-list"),
+    path('<int:id>/',decision_tree_view,name="decision_tree"),
 ]

@@ -1,9 +1,37 @@
 {% extends 'questions/base.html' %}
 
 {% block content %}
-<form method="POST"> {% csrf_token %}
+<!-- <form method="POST"> {% csrf_token %}
     <p>Only one variable of interest?</p>
     {{ form.as_p }}
     <input type="submit" value="Save">
+</form> -->
+
+<h1>{{ node.question }}</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="id" value="{{ node.pk }}">
+    <input type="submit" name="answer" value="Yes">
+    <input type="submit" name="answer" value="No">
 </form>
+
+<!-- <h3>{{ root_node.question }}</h1>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="node_id" value="{{ root_node.pk }}">
+    <input type="submit" name="answer" value="Yes">
+    <input type="submit" name="answer" value="No">
+</form> -->
+
+<!-- <h3>{{ current_node.question }}</h3>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="node_id" value="{{ current_node.id }}">
+    <input type="submit" name="answer" value="Yes">
+    <input type="submit" name="answer" value="No">
+</form> -->
+    
 {% endblock %}
