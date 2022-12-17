@@ -6,15 +6,16 @@
     {{ form.as_p }}
     <input type="submit" value="Save">
 </form> -->
+<div class="question">
+    <h2>{{ node.question }}</h2>
 
-<h1>{{ node.question }}</h1>
-
-<form method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="id" value="{{ node.pk }}">
-    <input type="submit" name="answer" value="Yes">
-    <input type="submit" name="answer" value="No">
-</form>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{ node.pk }}">
+        <input type="submit" name="answer" value="Yes">
+        <input type="submit" name="answer" value="No">
+    </form>
+</div>
 
 <!-- <h3>{{ root_node.question }}</h1>
 

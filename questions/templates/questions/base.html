@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
+    {% load static %}
     <head>
         <title>Data Analytics Decision Tree</title>
+        <link rel="stylesheet" href="{% static 'questions/base.css' %}">
     </head>
     <body>
-        <h1>Answer the questions below to find out which statistical test is more appropriate</h1>       
+        <h1 class="header">Answer the following questions to find out which statistical test is more appropriate</h1>       
         {% block content %}
         {% endblock %}
     </body>
