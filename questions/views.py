@@ -27,25 +27,61 @@ from .models import DecisionTreeNode
 #     context = {"root_node": root_node}
 #     return render(request, "questions/form.html", context)
 
-def decision_tree_view(request, id):
-    node = get_object_or_404(DecisionTreeNode, pk=id)
+def decision_tree_view(request):
+    # Fetch the root node of the decision tree
+    root_node = get_object_or_404(DecisionTreeNode, pk=1)
+    all_nodes = DecisionTreeNode.objects.all()
+    # Create a list to store the nodes in the decision tree
+    nodes = []
 
+    # If the form was submitted, determine the next node to display
     if request.method == 'POST':
-        # Process the user's answer and redirect to the next node
-        if request.POST.get('answer') == 'Yes':
-            next_node_id = node.yes_node_id
-        elif request.POST.get('answer') == 'No':
-            next_node_id = node.no_node_id
-        elif request.POST.get('answer') == '1':
-            next_node_id = node.one_node_id
-        elif request.POST.get('answer') == '2':
-            next_node_id = node.two_node_id
-        elif request.POST.get('answer') == 'More than 2':
-            next_node_id = node.moreThanTwo_node_id
+        # Get the primary key of the current node from the form data
+        node_pk = request.POST['node_id']
+        current_node = get_object_or_404(DecisionTreeNode, pk=node_pk)
 
-        return redirect('questions:decision_tree', id=next_node_id)
+        # Determine the next node based on the user's answer
+        if request.POST['answer'] == 'Yes':
+            next_node = current_node.yes_node
+        elif request.POST['answer'] == 'No':
+            next_node = current_node.no_node
+        elif request.POST['answer'] == '1':
+            next_node = current_node.one_node
+        elif request.POST['answer'] == '2':
+            next_node = current_node.two_node
+        elif request.POST['answer'] == 'More than 2':
+            next_node = current_node.moreThanTwo_node
+        else:
+            next_node = None
+        nodes.append(current_node)
+        nodes.append(next_node)
+        
+        # Retrieve the previous nodes and add it to the front of nodes. After the full recursion, nodes will have the entire pathway of nodes to the current node
+        def retrieve_previous_nodes(node):
+            for x in all_nodes:
+                if x.yes_node_id == node.id:
+                    nodes.insert(0,x)
+                    retrieve_previous_nodes(x)
+                if x.no_node_id == node.id:
+                    nodes.insert(0,x)
+                    retrieve_previous_nodes(x)            
+                if x.one_node_id == node.id:
+                    nodes.insert(0,x)
+                    retrieve_previous_nodes(x)            
+                if x.two_node_id == node.id:
+                    nodes.insert(0,x)
+                    retrieve_previous_nodes(x)            
+                if x.moreThanTwo_node_id == node.id:
+                    nodes.insert(0,x)
+                    retrieve_previous_nodes(x)            
+        retrieve_previous_nodes(current_node)
 
-    return render(request, 'questions/form.html', {'node': node})
+    # If the form was not submitted
+    else:
+        nodes = [root_node]
+
+    # Render the form template with the list of nodes and the current node
+    return render(request, 'questions/form.html', {'nodes': nodes})
 
 # Create your views here.
 # def decision_tree_view(request):

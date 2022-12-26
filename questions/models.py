@@ -10,5 +10,6 @@ class DecisionTreeNode(models.Model):
     one_node = models.ForeignKey("self", on_delete=models.CASCADE, related_name="one_nodes", null=True, blank=True, default=None)
     two_node = models.ForeignKey("self", on_delete=models.CASCADE, related_name="two_nodes", null=True, blank=True, default=None)
     moreThanTwo_node = models.ForeignKey("self", on_delete=models.CASCADE, related_name="moreThanTwo_nodes", null=True, blank=True, default=None)
+    description = models.TextField(null=True, default=None)
     question = models.TextField()
 
