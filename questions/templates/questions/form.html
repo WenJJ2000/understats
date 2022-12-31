@@ -1,34 +1,89 @@
 {% extends 'questions/base.html' %}
 
 {% block content %}
+{% load index %}
 
 {% for node in nodes %}
-    <div class="questionbox">
-        {% if node.no_node_id or node.yes_node_id or node.one_node_id or node.two_node_id or node.moreThanTwo_node_id %}
-            <h2 class="question">{{forloop.counter}}. {{ node.question }}</h2>
-        {% else %}
-            <h2 class="answer">{{ node.question }}</h2>
-        {% endif %}
-        {% if node.no_node_id or node.yes_node_id %}
-            <form id="form" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="node_id" value="{{ node.pk }}">
-                <input type="submit" name="answer" value="Yes" id="button">
-                <input type="submit" name="answer" value="No" id="button">
-            </form>
-        {% elif node.one_node_id or node.two_node_id or node.moreThanTwo_node_id %}    
-            <form id="form" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="node_id" value="{{ node.pk }}">
-                <input type="submit" name="answer" value="1" id="button">
-                <input type="submit" name="answer" value="2" id="button">
-                <input type="submit" name="answer" value="More than 2" id="button">
-            </form>
-        {% endif %}
-    </div>
+    <!-- defining the next node in every for loop -->
+    {% if forloop.counter|add:1 <= nodes|length %}
+        {% with nodes|index:forloop.counter as next_node %}
+            <div class="questionbox">
+                {% if node.no_node_id or node.yes_node_id or node.one_node_id or node.two_node_id or node.moreThanTwo_node_id %}
+                    <h2 class="question">{{forloop.counter}}. {{ node.question }}</h2>
+                {% else %}
+                <!-- This only applies to the final node, which is always the answer -->
+                    <h2 class="answer">{{ node.question }}</h2> 
+                {% endif %}
+                {% if node.no_node_id or node.yes_node_id %}
+                    <form id="form" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="node_id" value="{{ node.pk }}">
+                        <!-- if next node is from the no node of the current question, the button will be disabled and given a different class -->
+                        {% if node.no_node_id == next_node.id %}
+                            <input type="submit" name="answer" value="Yes" id="button">
+                            <input type="submit" name="answer" value="No" id="clicked" disabled>
+                        {% elif node.yes_node_id == next_node.id %}
+                            <input type="submit" name="answer" value="Yes" id="clicked" disabled>
+                            <input type="submit" name="answer" value="No" id="button">
+                        {% endif %}
+                    </form>
+                {% elif node.one_node_id or node.two_node_id or node.moreThanTwo_node_id %}    
+                    <form id="form" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="node_id" value="{{ node.pk }}">
+                        <!-- if next node is from the one_node of the current question, the button will be disabled and given a different class -->                        
+                        {% if node.one_node_id == next_node.id %}
+                            <input type="submit" name="answer" value="1" id="clicked" disabled>
+                            <input type="submit" name="answer" value="2" id="button">
+                            <input type="submit" name="answer" value="More than 2" id="button">
+                        {% elif node.two_node_id == next_node.id %}
+                            <input type="submit" name="answer" value="1" id="button">
+                            <input type="submit" name="answer" value="2" id="clicked" disabled>
+                            <input type="submit" name="answer" value="More than 2" id="button">
+                        {% elif node.moreThanTwo_node_id == next_node.id %}
+                            <input type="submit" name="answer" value="1" id="button">
+                            <input type="submit" name="answer" value="2" id="button">
+                            <input type="submit" name="answer" value="More than 2" id="clicked" disabled>
+                        {% else %}
+                            <input type="submit" name="answer" value="1" id="button">
+                            <input type="submit" name="answer" value="2" id="button">
+                            <input type="submit" name="answer" value="More than 2" id="button">
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+        {% endwith %}
+    {% else %}
+    <!-- This else case is for the last index in nodes where there is no next node -->
+        <div class="questionbox">
+            {% if node.no_node_id or node.yes_node_id or node.one_node_id or node.two_node_id or node.moreThanTwo_node_id %}
+                <h2 class="question">{{forloop.counter}}. {{ node.question }}</h2>
+            {% else %}
+            <!-- This only applies to the final node, which is always the answer -->
+                <h2 class="answer">{{ node.question }}</h2> 
+            {% endif %}
+            {% if node.no_node_id or node.yes_node_id %}
+                <form id="form" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="node_id" value="{{ node.pk }}">
+                    <input type="submit" name="answer" value="Yes" id="button">
+                    <input type="submit" name="answer" value="No" id="button">
+                </form>
+            {% elif node.one_node_id or node.two_node_id or node.moreThanTwo_node_id %}    
+                <form id="form" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="node_id" value="{{ node.pk }}">
+                    <input type="submit" name="answer" value="1" id="button">
+                    <input type="submit" name="answer" value="2" id="button">
+                    <input type="submit" name="answer" value="More than 2" id="button">
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endfor %}
 
 <script>
+    // keep the scroll position of the page after refresh or each POST request
     document.addEventListener("DOMContentLoaded", function(event) { 
         var scrollpos = localStorage.getItem('scrollpos');
         if (scrollpos) window.scrollTo(0, scrollpos);
@@ -38,28 +93,4 @@
         localStorage.setItem('scrollpos', window.scrollY);
     };
 </script>
-<!-- <script type="text/javascript">
-$(document).ready(function() {
-    $("form").submit(function(event) {
-        event.preventDefault();  // Prevent the form from being submitted
-
-        // Collect the form data
-        var formData = {
-        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-        'answer': $('input[name=answer]').val(),
-        'node_id': $('input[name=node_id]').val(),
-        };
-
-        // Submit the form data using an AJAX request
-        $.ajax({
-        type: 'POST',
-        url: '/questions/',
-        data: formData,
-        success: function(response) {
-            // Handle the response data, if necessary
-        }
-        });
-    });
-    });
-</script> -->
 {% endblock %}

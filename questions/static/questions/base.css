@@ -30,8 +30,8 @@ body {
     cursor: pointer;
     font-size: 16px;
     font-weight: 500;
-    width: 6.6rem;
-    height: 3.1rem;
+    width: 7rem;
+    height: 3.3rem;
     border: 0;
     border-radius: 12px;
     background-color: rgb(12, 173, 104);
@@ -43,8 +43,22 @@ body {
     background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
 }
 
-#button:active {
+input[type="submit"]:active {
     background-image: linear-gradient(rgb(0 0 0/40%) 0 0);
     border:0.1rem;
     border-color: rgb(7, 104, 107);
+}
+
+#clicked {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    width: 7rem;
+    height: 3.3rem;
+    border-radius: 12px;
+    background-color: rgb(12, 173, 104);
+    color: white;
+    margin: 0rem 1rem 1rem 1rem;
+    /* background-image: linear-gradient(rgb(0 0 0/40%) 0 0); */
+    border:0.3rem solid rgb(218, 218, 8);
 }
