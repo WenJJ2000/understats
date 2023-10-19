@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html>
-  {% load static %}
-  <head>
-    <title>Index page</title>
-  </head>
-
-  <body>
-    <h1 class="header">you can upload your csv data here</h1>
-  </body>
-</html>
+{% extends 'questions/base.html' %} {% block text %}
+<h1 class="header">This is the home page</h1>
+{% endblock %} {% block content %}
+<div>
+  <form action="/action_page.php">
+    <input type="file" id="img" name="img" accept=".csv" />
+    <input type="submit" />
+  </form>
+</div>
+{% endblock %}

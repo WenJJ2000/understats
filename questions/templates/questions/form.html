@@ -1,5 +1,11 @@
 {% extends 'questions/base.html' %}
 
+{% block text %} 
+<h1 class="header">
+    Answer the following questions to find out which statistical test to use
+  </h1>
+{% endblock %} 
+
 {% block content %}
 {% load index %}
 
@@ -22,7 +28,7 @@
                         {% if node.no_node_id == next_node.id %}
                             <input type="submit" name="answer" value="Yes" id="button">
                             <input type="submit" name="answer" value="No" id="clicked" disabled>
-                        {% elif node.yes_node_id == next_node.id %}
+       `                {% elif node.yes_node_id == next_node.id %}
                             <input type="submit" name="answer" value="Yes" id="clicked" disabled>
                             <input type="submit" name="answer" value="No" id="button">
                         {% endif %}

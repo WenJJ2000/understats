@@ -1,11 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
-from .models import DecisionTreeNode
+from .models import DecisionTreeNode, CONST
 
 
 def decision_tree_view(request):
     # Fetch the root node of the decision tree
-    root_node = get_object_or_404(DecisionTreeNode, pk=1)
+    root_node = get_object_or_404(DecisionTreeNode, pk=CONST.ROOT_NODE)
+    # print(root_node)
     all_nodes = DecisionTreeNode.objects.all()
     # Create a list to store the nodes in the decision tree
     nodes = []

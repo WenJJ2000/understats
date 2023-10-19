@@ -5,6 +5,11 @@ from django.db import models
 #     answer = models.BooleanField()
 
 
+class CONST:
+    ROOT_NODE = 17
+    DEBUG = True
+
+
 class DecisionTreeNode(models.Model):
     yes_node = models.ForeignKey(
         "self",
@@ -44,4 +49,7 @@ class DecisionTreeNode(models.Model):
     question = models.TextField()
 
     def __str__(self):
-        return self.question
+        if CONST.DEBUG == True:
+            return self.question + " " + str(self.pk)
+        else:
+            return self.pk
