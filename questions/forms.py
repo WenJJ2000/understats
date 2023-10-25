@@ -1,6 +1,8 @@
 from django import forms
+from questions.models import Datafile
 
 # from .models import Question
+
 
 # class QuestionForm(forms.Form):
 #     CHOICES = [
@@ -11,7 +13,14 @@ from django import forms
 #         label='',
 #         widget=forms.RadioSelect(choices=CHOICES),
 #     )
-    # answer = forms.BooleanField()
-    # class Meta:
-    #     model = Question
-    #     fields = ['answer']
+#     answer = forms.BooleanField()
+#     class Meta:
+#         model = Question
+#         fields = ['answer']
+class DatafileForm(forms.ModelForm):
+    class Meta:
+        model = Datafile
+        fields = [
+            "description",
+            "document",
+        ]

@@ -1,6 +1,12 @@
+from urllib.parse import urlencode
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-
+from django.urls import reverse
+from questions.scripts import choose_method
+from .forms import DatafileForm
 from .models import DecisionTreeNode, CONST
+import pandas as pd
+from decouple import config
 
 
 def decision_tree_view(request):
@@ -32,6 +38,12 @@ def decision_tree_view(request):
             next_node = None
         nodes.append(current_node)
         nodes.append(next_node)
+        print(current_node)
+        if next_node.yes_node == None and next_node.one_node == None:
+            base = reverse("upload")
+            q_string = urlencode({"test": next_node.description})
+            url = "{}?{}".format(base, q_string)
+            return redirect(url)
 
         # Retrieve the previous nodes and add it to the front of nodes.
         # After the full recursion, the list "nodes" will have the entire
@@ -60,9 +72,39 @@ def decision_tree_view(request):
     else:
         nodes = [root_node]
 
+    # reach root node
     # Render the form template with the list of nodes and the current node
     return render(request, "questions/form.html", {"nodes": nodes})
 
 
 def index_page(request):
     return render(request, "questions/index.html")
+
+
+def upload_file(request):
+    if request.method == "POST":
+        test = request.GET.get("test")
+        form = DatafileForm(request.POST, request.FILES)
+        # print(request.FILES, request.POST)
+        if form.is_valid():
+            choose_method(request.FILES["document"], test)
+            return redirect("/questions/Result")
+    else:
+        form = DatafileForm()
+        test = request.GET.get("test")
+        # print(request, request.POST, test)
+
+        context = {"form": form, "uploaded_file_url": config("BASE_URL")}
+    return render(request, "questions/input.html", context)
+
+
+def show_result(request):
+    output = pd.read_csv("output.csv").to_html()
+    context = {"data": output}
+    return render(request, "questions/output.html", context)
+
+
+# def index(request):
+#     latest_question_list = questions.objects.order_by("-pub_date")[:5]
+#     output = ", ".join([q.question_text for q in latest_question_list])
+#     return HttpResponse(output)

@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from questions.views import index_page
+from questions.views import index_page, upload_file
 
 urlpatterns = [
-    path("", index_page),
-    path("admin/", admin.site.urls),
+    path("", index_page, name="index"),
+    path("upload/", upload_file, name="upload"),
+    path("admin/", admin.site.urls, name="admin"),
     path("questions/", include("questions.urls")),
 ]
