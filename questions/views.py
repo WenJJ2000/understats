@@ -4,14 +4,15 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from questions.scripts import choose_method
 from .forms import DatafileForm
-from .models import DecisionTreeNode, CONST
+from .models import DecisionTreeNode
+from questions import const
 import pandas as pd
 from decouple import config
 
 
 def decision_tree_view(request):
     # Fetch the root node of the decision tree
-    root_node = get_object_or_404(DecisionTreeNode, pk=CONST.ROOT_NODE)
+    root_node = get_object_or_404(DecisionTreeNode, pk=const.ROOT_NODE)
     # print(root_node)
     all_nodes = DecisionTreeNode.objects.all()
     # Create a list to store the nodes in the decision tree
@@ -38,7 +39,7 @@ def decision_tree_view(request):
             next_node = None
         nodes.append(current_node)
         nodes.append(next_node)
-        print(current_node)
+        # print(current_node)
         if next_node.yes_node == None and next_node.one_node == None:
             base = reverse("upload")
             q_string = urlencode({"test": next_node.description})
@@ -85,9 +86,10 @@ def upload_file(request):
     if request.method == "POST":
         test = request.GET.get("test")
         form = DatafileForm(request.POST, request.FILES)
-        # print(request.FILES, request.POST)
+        # print(request.FILES["document"])
         if form.is_valid():
-            choose_method(request.FILES["document"], test)
+            confidence = request.POST.get("confidence_level")
+            choose_method(request.FILES["document"], test, float(confidence))
             return redirect("/questions/Result")
     else:
         form = DatafileForm()

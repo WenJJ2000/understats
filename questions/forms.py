@@ -21,6 +21,6 @@ class DatafileForm(forms.ModelForm):
     class Meta:
         model = Datafile
         fields = [
-            "description",
+            "confidence_level",
             "document",
         ]

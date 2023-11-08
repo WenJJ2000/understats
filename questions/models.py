@@ -1,13 +1,10 @@
 from django.db import models
+from django_decision_tree import settings
+from questions import const
 
 # Create your models here.
 # class Question(models.Model):
 #     answer = models.BooleanField()
-
-
-class CONST:
-    ROOT_NODE = 17
-    DEBUG = True
 
 
 class DecisionTreeNode(models.Model):
@@ -49,13 +46,13 @@ class DecisionTreeNode(models.Model):
     question = models.TextField()
 
     def __str__(self):
-        if CONST.DEBUG == True:
+        if settings.DEBUG == True:
             return self.question + " " + str(self.pk)
         else:
             return self.pk
 
 
 class Datafile(models.Model):
-    description = models.CharField(max_length=255, blank=True)
-    document = models.FileField(upload_to="documents/")
+    confidence_level = models.DecimalField(default=0.95, decimal_places=3, max_digits=4)
+    document = models.FileField()
     uploaded_at = models.DateTimeField(auto_now_add=True)

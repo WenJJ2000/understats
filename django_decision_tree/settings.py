@@ -81,7 +81,16 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": config("DB_NAME"),
-    }
+    },
+    "replica": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": config("DB_NAME"),
+        "HOST": "dbreplica",
+        "TEST": {
+            "MIRROR": "default",
+        },
+        # ... plus some other settings
+    },
 }
 
 

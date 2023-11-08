@@ -5,25 +5,25 @@ import numpy as np
 import pandas as pd
 
 
-def choose_method(arr, test):
-    data = excel_to_arr(arr)
-    if test == "ztest":
-        ans = ztest(data, 0.995, 1)
-        print("this is ans : ", ans)
-        write_out(ans, "output.csv")
-    return ans
-
-
 def excel_to_arr(f, head=None):
-    vals = pd.read_excel(f, header=head).values.tolist()
+    # print(type(f.name), type(f))
+    vals = []
+    # print(str(f), str(f).endswith(".xlx"), str(f).endswith(".csv"))
+    if str(f).endswith(".xlx"):
+        vals = pd.read_excel(f, header=head).values.tolist()
+    elif str(f).endswith(".csv"):
+        vals = pd.read_csv(f).values.tolist()
 
+    print(vals)
     data = process_data(vals)
     write_out(vals, "input.csv")
-
+    print(data)
     return data
 
 
 def process_data(pd_arr):
+    if not pd_arr:
+        return pd_arr
     data = []
     for i in range(len(pd_arr[0])):
         curr = []
@@ -51,9 +51,10 @@ def mean(arr):
     return arr.mean()
 
 
-def ztest(arr, confidence, ended):
+def ztest(data, confidence, ended):
+    arr = data
     arr = arr[0]
-    print(arr)
+    # print(arr)
 
     n = len(arr)
     xbar = mean(arr)
@@ -71,3 +72,19 @@ def ztest(arr, confidence, ended):
     print(upper, lower)
 
     return [t_crit, lower, upper]
+
+
+mp = {
+    "ztest": lambda data: ztest(**data),
+}
+
+
+def choose_method(excel, test, confidence):
+    data = excel_to_arr(excel)
+    fn = mp.get(test, None)
+    if fn is None:
+        return None
+    ans = fn({"data": data, "confidence": confidence, "ended": 1})
+    print("this is ans : ", ans)
+    write_out(ans, "output.csv")
+    return ans
