@@ -101,7 +101,10 @@ def upload_file(request):
 
 
 def show_result(request):
-    output = pd.read_csv("output.csv").to_html()
+    data = pd.read_json("output.json", typ="series")
+    output = ""
+    for k, v in data.items():
+        output += f"{k} : {v}, "
     context = {"data": output}
     return render(request, "questions/output.html", context)
 

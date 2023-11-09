@@ -5,7 +5,6 @@ from django.urls import reverse
 from questions.models import DecisionTreeNode, Datafile
 from decouple import config
 from django.core.files.uploadedfile import SimpleUploadedFile
-from questions.scripts import choose_method
 from questions.const import TEST_DIR, ROOT_NODE
 from django.test import override_settings
 
