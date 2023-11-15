@@ -55,4 +55,6 @@ class DecisionTreeNode(models.Model):
 class Datafile(models.Model):
     confidence_level = models.DecimalField(default=0.95, decimal_places=3, max_digits=4)
     document = models.FileField()
+    test_stat = models.FloatField(default=0)
+    ended = models.IntegerField(default=1)
     uploaded_at = models.DateTimeField(auto_now_add=True)

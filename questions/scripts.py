@@ -1,6 +1,7 @@
 import csv
 from matplotlib import pyplot as plt
 from scipy import stats
+from statsmodels.stats.contingency_tables import mcnemar
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import pandas as pd
@@ -60,7 +61,7 @@ def mean(arr):
     return arr.mean()
 
 
-def ztest(data, confidence, ended):
+def ztest(data, confidence, ended, stat):
     arr = data
     arr = arr[0]
     # print(arr)
@@ -68,6 +69,8 @@ def ztest(data, confidence, ended):
     n = len(arr)
     xbar = mean(arr)
     x_sd = std(arr, 1)  # sample sd
+    z = (xbar - stat) / (x_sd / np.sqrt(n, ddof=1))
+
     if ended == 1:
         t_crit = stats.t.ppf(confidence, n - 1)
     else:
@@ -80,10 +83,10 @@ def ztest(data, confidence, ended):
     upper = xbar + x_sd * t_crit / np.sqrt(n)
     # print(upper, lower)
 
-    return {"t_crit": t_crit, "lower_limit": lower, "upper_limit": upper}
+    return {"t_crit": t_crit, "z_stat": z, "lower_limit": lower, "upper_limit": upper}
 
 
-def simple_linear_regression(data, confidence, ended):
+def simple_linear_regression(data, confidence, ended, stat):
     # print(data)
     X_train = np.array(data[0]).reshape((-1, 1))
     y_train = np.array(data[1])
@@ -95,31 +98,176 @@ def simple_linear_regression(data, confidence, ended):
     }
 
 
-def one_sample_chi_sq_test_for_variances(data, confidence, ended):
+def one_sample_chi_sq_test_for_variances(data, confidence, ended, stat):
+    arr = data[0]
+    n = len(arr)
+    alpha = 1 - confidence
+    q = (n - 1) * np.var(arr) / stat
+    if ended == 1:
+        lower = stats.chi2.ppf(alpha, n - 1)
+        upper = stats.chi2.ppf(confidence, n - 1)
+    else:
+        lower = stats.chi2.ppf(alpha / 2, n - 1)
+        upper = stats.chi2.ppf(1 - (alpha / 2), n - 1)
+
+    p = stats.chi2.cdf(q, n - 1)
+
+    return {"Lower": lower, "Upper": upper, "Test_stat": q, "p-value": p}
+
+
+def bionomial_normal_theory_test(data, confidence, ended, stat):
+    arr = np.array(data[0])
+    n = len(data[0])
+    p0 = sum(arr) / n
+
+    z = (p0 - stat) / (np.sqrt(p0 * (1 - p0) / n))
+    if ended == 1:
+        a = 1 - confidence
+        lower = stats.norm.ppf(a)
+        upper = stats.norm.ppf(1 - a)
+    if ended == 2:
+        a = 1 - confidence
+        a = a / 2
+        lower = stats.norm.ppf(a)
+        upper = stats.norm.ppf(1 - a)
+
+    p = stats.norm.cdf(z, n - 1)
+
+    return {"Lower": lower, "Upper": upper, "Test_stat": z, "p-value": p}
+
+
+def bionomial_exact_method_test(data, confidence, ended, stat):
+    arr = np.array(data[0])
+    n = len(data[0])
+    p0 = sum(arr) / n
+    p = 0
+    if p0 <= stat:
+        for i in range(n - 1):
+            bi = stats.binom.pmf(i, n, p0)
+            if bi <= stat:
+                p += bi
+    elif p0 > stat:
+        for i in range(n - 1):
+            bi = stats.binom.pmf(i, n, p0)
+            if bi > stat:
+                p += bi
+    return {"p-value": p}
+
+
+def one_sample_possion_test(data, confidence, ended, stat):
+    arr = np.array(data[0])
+    x = mean(arr)
+    u0 = sum(arr)
+    # need more input fields, to do
+    return {"test": "to be implemented"}
+
+
+def signed_rank_test(data, confidence, ended, stat):
+    arr = np.array(data[0])
+    narr = np.array()
+    for i in arr:
+        narr[i] = abs(arr[i] - stat)
+    n = arr.size
+    # E = n(n / 1) / 4
+    # var = n * (n + 1) * (2 * n + 1) / 24
+    rank, pval = stats.wilcoxon(arr - stat, zero_method="wilcox", correction=False)
+    return {"rank": rank, "p-value": pval}
+
+
+def two_sample_F_test(data, confidence, ended, stat):
+    arr1 = np.array(data[0])
+    arr2 = np.array(data[1])
+    var1 = np.var(arr1, ddof=1)
+    var2 = np.var(arr2, ddof=1)
+    f_val = var1 / var2
+    df1 = len(arr1) - 1
+    df2 = len(arr2) - 1
+    p_value = stats.f.cdf(f_val, df1, df2)
+
+    return {"p_value": p_value, "df1": df1, "df2": df2}
+
+
+def paired_t_test(data, confidence, ended, stat):
+    arr1 = np.array(data[0])
+    arr2 = np.array(data[1])
+    t, p_val = stats.ttest_rel(arr1, arr2)
+    return {"test_stat": t, "p_value": p_val}
+
+
+def two_sample_t_eq_var(data, confidence, ended, stat):
+    arr1 = np.array(data[0])
+    arr2 = np.array(data[1])
+    # n1, n2 = arr1.size, arr2.size
+    # x1, x2 = mean(arr1), mean(arr2)
+    # var1 = np.var(arr1, ddof=1)
+    # var2 = np.var(arr2, ddof=1)
+
+    # s = np.sqrt(((n1 - 1) * var1**2 + (n2 - 1) * var2**2) / (n1 + n2 - 2))
+
+    # t = (x1 - x2) / (s * ((1 / n1) + (1 / n2)))
+    t, p_val = stats.ttest_ind(a=arr1, b=arr2, equal_var=True)
+    return {"test_stat": t, "p_value": p_val}
+
+
+def two_sample_t_uneq_var(data, confidence, ended, stat):
+    arr1 = np.array(data[0])
+    arr2 = np.array(data[1])
+    # var1 = np.var(arr1, ddof=1)
+    # var2 = np.var(arr2, ddof=1)
+
+    t, p_val = stats.ttest_ind(a=arr1, b=arr2, equal_var=False)
+    return {"test_stat": t, "p_value": p_val}
+
+
+def mcnemar_test(data, confidence, ended, stat):
+    arr = []
+    for col in range(data[0]):
+        curr = []
+        for row in range(data):
+            curr.append(data[row][col])
+        arr.append(curr)
+    p1, stat1, p2, stat2 = mcnemar(arr, exact=False, correction=False)
+    return {
+        "p_value 1 ": p1,
+        "test stat 1": stat1,
+        "p_value 2": p2,
+        "test stat 2": stat2,
+    }
+
+
+def fishers_exact_test(data, confidence, ended, stat):
+    arr = []
+    for col in range(data[0]):
+        curr = []
+        for row in range(data):
+            curr.append(data[row][col])
+        arr.append(curr)
+    odd_ratio, p_value = stats.fisher_exact(data)
+    return {"odd ration": odd_ratio, "P-value": p_value}
+
+
+def wilcoxon_rank_test(data, confidence, ended, stat):
+    arr1 = np.array(data[0])
+    arr2 = np.array(data[1])
+
+    test_stat, p_value = stats.wilcoxon(arr1, arr2)
+
+    return {"test stats": test_stat, "p-value": p_value}
+
+
+def chi_sq_test(data, confidence, ended, stat):
+    return {}
+
+
+def one_way_ANOVA(data, confidence, ended, stat):
     return
 
 
-def chi_sq_test(data, confidence, ended):
+def two_way_ANOVA(data, confidence, ended, stat):
     return
 
 
-def one_way_ANOVA(data, confidence, ended):
-    return
-
-
-def two_way_ANOVA(data, confidence, ended):
-    return
-
-
-def one_sample_t_test(data, confidence, ended):
-    return
-
-
-def paired_t_test(data, confidence, ended):
-    return
-
-
-def one_sample_possion_test(data, confidence, ended):
+def one_sample_t_test(data, confidence, ended, stat):
     return
 
 
@@ -129,6 +277,19 @@ mp = {
     "one_sample_chi_sq_test_for_variances": lambda data: one_sample_chi_sq_test_for_variances(
         **data
     ),
+    "bionomial_normal_theory_test": lambda data: bionomial_normal_theory_test(**data),
+    "Exact_Methods": lambda data: bionomial_exact_method_test(**data),
+    "signed_rank_test": lambda data: signed_rank_test(**data),
+    "two_sample_F_test": lambda data: two_sample_F_test(**data),
+    "paired_t_test": lambda data: paired_t_test(**data),
+    "two_sample_t_eq_var": lambda data: two_sample_t_eq_var(**data),
+    "two_sample_t_uneq_var": lambda data: two_sample_t_uneq_var(**data),
+    "mcnemar_test": lambda data: mcnemar_test(**data),
+    "fishers_exact_test": lambda data: fishers_exact_test(**data),
+    "wilcoxon_rank_test": lambda data: wilcoxon_rank_test(**data),
+    #
+    #
+    #
     "chi_sq_test": lambda data: chi_sq_test(**data),
     "one_way_anova": lambda data: one_way_ANOVA(**data),
     "two_way_anova": lambda data: two_way_ANOVA(**data),
@@ -138,12 +299,12 @@ mp = {
 }
 
 
-def choose_method(excel, test, confidence):
+def choose_method(excel, test, confidence, stat, ended):
     data = excel_to_arr(excel)
     fn = mp.get(test, None)
     if fn is None:
         return None
-    ans = fn({"data": data, "confidence": confidence, "ended": 1})
+    ans = fn({"data": data, "confidence": confidence, "ended": ended, "stat": stat})
     print("this is ans : ", ans)
     write_out_json(ans, "output.json")
     return ans

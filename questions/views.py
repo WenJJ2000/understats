@@ -89,11 +89,15 @@ def upload_file(request):
         # print(request.FILES["document"])
         if form.is_valid():
             confidence = request.POST.get("confidence_level")
-            choose_method(request.FILES["document"], test, float(confidence))
+            stat = request.POST.get("test_stat")
+            ended = request.POSt.get("ended")
+            choose_method(
+                request.FILES["document"], test, float(confidence), stat, ended
+            )
             return redirect("/questions/Result")
     else:
         form = DatafileForm()
-        test = request.GET.get("test")
+        # test = request.GET.get("test")
         # print(request, request.POST, test)
 
         context = {"form": form, "uploaded_file_url": config("BASE_URL")}

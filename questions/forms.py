@@ -22,5 +22,7 @@ class DatafileForm(forms.ModelForm):
         model = Datafile
         fields = [
             "confidence_level",
+            "test_stat",
+            "ended",
             "document",
         ]
