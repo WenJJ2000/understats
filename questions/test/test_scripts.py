@@ -14,7 +14,7 @@ class ScriptsTest(SimpleTestCase):
         pass
 
     def test_ztest(self):
-        ans = ztest(self.data, 0.95, 1)
+        ans = ztest(self.data, 0.95, 1, 0)
         t_crit = stats.t.ppf(0.95, 10 - 1)
         print("Scripts : testing z-test")
         self.assertEquals(ans["t_crit"], t_crit)
@@ -23,7 +23,7 @@ class ScriptsTest(SimpleTestCase):
         print("Z-Test Check")
 
     def test_simple_linear_regression(self):
-        ans = simple_linear_regression(self.data, 0.9, 1)
+        ans = simple_linear_regression(self.data, 0.9, 1, 0)
         print("Scripts : testing simple linear regression")
         self.assertEquals(ans["coefficient_of_determination"], 1)
         self.assertAlmostEquals(ans["intercept"], 0)

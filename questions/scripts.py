@@ -69,7 +69,7 @@ def ztest(data, confidence, ended, stat):
     n = len(arr)
     xbar = mean(arr)
     x_sd = std(arr, 1)  # sample sd
-    z = (xbar - stat) / (x_sd / np.sqrt(n, ddof=1))
+    z = (xbar - stat) / (x_sd / np.sqrt(n))
 
     if ended == 1:
         t_crit = stats.t.ppf(confidence, n - 1)
