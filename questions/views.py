@@ -90,9 +90,9 @@ def upload_file(request):
         if form.is_valid():
             confidence = request.POST.get("confidence_level")
             stat = request.POST.get("test_stat")
-            ended = request.POSt.get("ended")
+            ended = request.POST.get("ended")
             choose_method(
-                request.FILES["document"], test, float(confidence), stat, ended
+                request.FILES["document"], test, float(confidence), float(stat), ended
             )
             return redirect("/questions/Result")
     else:
