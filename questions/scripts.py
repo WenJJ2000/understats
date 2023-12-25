@@ -255,19 +255,121 @@ def wilcoxon_rank_test(data, confidence, ended, stat):
     return {"test stats": test_stat, "p-value": p_value}
 
 
+def sum_sq_mat(table):
+    rows = []
+    cols = []
+    for i in range(len(table)):
+        rows.append(sum(table[i, :]))
+    for i in range(len(table[0])):
+        cols.append(sum(table[:, i]))
+    return [rows, cols]
+
+
+def exp_mat(table):
+    rows, cols = sum_sq_mat(table)
+    t_row = sum(rows)
+    exp_mat = []
+    for i in range(len(rows)):
+        row = []
+        for j in range(len(cols)):
+            row.append(rows[i] * (cols[j] / t_row))
+        exp_mat.append(row)
+    return exp_mat
+
+
 def chi_sq_test(data, confidence, ended, stat):  # parse in Frequency array
-    return {}
+    table = data
+    expmat = exp_mat(data)
+    chi_sq_stat = 0
+    for i in range(len(table)):
+        for j in range(len(table[0])):
+            chi_sq_stat += (np.abs(table[i][j] - expmat[i][j])) ** 2 / expmat[i][j]
+    ddof = (len(table) - 1) * (len(table[0]) - 1)
+    chi_crit = stats.chi2.ppf(confidence, ddof)
+
+    p_value = 1 - stats.chi2.cdf(chi_sq_stat, ddof)
+
+    return {"chi sq stat": chi_sq_stat, "chi crit": chi_crit, "p_value": p_value}
 
 
-def one_way_ANOVA(data, confidence, ended, stat):
-    return
+def ANOVA(data, confidence, ended, stat):
+    arr = data
+    xbars = [mean(i) for i in arr]
+    sd = [std(i, 1) for i in arr]
+    var = [i**2 for i in sd]
+    s_wit = np.sum(var) / len(arr)
+    t_mean = np.sum(xbars) / len(arr)
+    s_bet = 0
+    for i in range(len(arr)):
+        curr = arr[i]
+        s_bet += (xbars[i] - t_mean) ** 2
+    s_bet = s_bet / (len(arr) - 1)
+    s_bet = s_bet * len(arr[0])
 
-
-def two_way_ANOVA(data, confidence, ended, stat):
-    return
+    f_ratio = s_bet / s_wit
+    alpha = 1 - confidence
+    dfn = len(arr) - 1  # numerator dof = m-1
+    dfd = len(arr) * (len(arr[0]) - 1)  # denominator dof = m*(n-1)
+    f_crit = stats.f.ppf(1 - alpha, dfn, dfd)
+    p_value = 1 - stats.f.cdf(f_ratio, dfn, dfd)
+    result = "Reject null" if f_ratio > f_crit else "Cannot reject null"
+    return {"p Value": p_value, "f ratio": f_ratio, "f crit": f_crit, "result": result}
 
 
 def one_sample_t_test(data, confidence, ended, stat):
+    arr = data[0]
+    n = len(arr)
+    xbar = arr.mean()
+    x_sd = std(arr, 1)
+    x1 = stat
+    t_stat = (xbar - x1) / (x_sd / np.sqrt(n))
+    ddof = n - 1
+    if ended == 1:
+        t_crit = stats.t.ppf(confidence, n - 1)
+    else:
+        a = 1 - confidence
+        a = a / 2
+        confidence = 1 - a
+        t_crit = stats.t.ppf(confidence, n - 1)
+    result = "Rejected null " if np.abs(t_stat) > t_crit else "null not rejected"
+    p_value = 2 * (1 - stats.t.cdf(np.abs(t_stat), ddof))
+
+    return {"p - vlaue": p_value, "T stat": t_stat, "T crit": t_crit, "result": result}
+
+
+def rank_correlation_method(data, confidence, ended, stat):
+    return
+
+
+def person_correlation(data, confidence, ended, stat):
+    return
+
+
+def kruskal_wallis_test(data, confidence, ended, stat):
+    return
+
+
+def contingency_table(data, confidence, ended, stat):
+    return
+
+
+def kappa_statistic(data, confidence, ended, stat):
+    return
+
+
+def multiple_regression(data, confidnce, ended, stat):
+    return
+
+
+def multiple_log_regression(data, confidnce, ended, stat):
+    return
+
+
+def one_sample_incidence_test(data, confidnce, ended, stat):
+    return
+
+
+def log_rank_test(data, confidnce, ended, stat):
     return
 
 
@@ -287,15 +389,23 @@ mp = {
     "mcnemar_test": lambda data: mcnemar_test(**data),
     "fishers_exact_test": lambda data: fishers_exact_test(**data),
     "wilcoxon_rank_test": lambda data: wilcoxon_rank_test(**data),
-    #
-    #
-    #
     "chi_sq_test": lambda data: chi_sq_test(**data),
-    "one_way_anova": lambda data: one_way_ANOVA(**data),
-    "two_way_anova": lambda data: two_way_ANOVA(**data),
+    "one_way_anova": lambda data: ANOVA(**data),
+    "two_way_anova": lambda data: ANOVA(**data),
     "one_sample_t_test": lambda data: one_sample_t_test(**data),
-    "paired_t_test": lambda data: paired_t_test(**data),
     "one_sample_possion": lambda data: one_sample_possion_test(**data),
+    #
+    #
+    #
+    "rank_correlation_methods": lambda data: rank_correlation_method(**data),
+    "person_correlation": lambda data: person_correlation(**data),
+    "kruskal_wallis_test": lambda data: kruskal_wallis_test(**data),
+    "contingency_table": lambda data: contingency_table(**data),
+    "kappa_statistic": lambda data: kappa_statistic(**data),
+    "multiple_regression": lambda data: multiple_regression(**data),
+    "multiple_log_regression": lambda data: multiple_log_regression(**data),
+    "one_sample_incidence_test": lambda data: one_sample_incidence_test(**data),
+    "log_rank_test": lambda data: log_rank_test(**data),
 }
 
 
