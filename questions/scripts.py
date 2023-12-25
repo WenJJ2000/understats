@@ -397,7 +397,7 @@ mp = {
     #
     #
     #
-    "rank_correlation_methods": lambda data: rank_correlation_method(**data),
+    "rank_correlation_method": lambda data: rank_correlation_method(**data),
     "person_correlation": lambda data: person_correlation(**data),
     "kruskal_wallis_test": lambda data: kruskal_wallis_test(**data),
     "contingency_table": lambda data: contingency_table(**data),
