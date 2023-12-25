@@ -255,7 +255,7 @@ def wilcoxon_rank_test(data, confidence, ended, stat):
     return {"test stats": test_stat, "p-value": p_value}
 
 
-def chi_sq_test(data, confidence, ended, stat):
+def chi_sq_test(data, confidence, ended, stat):  # parse in Frequency array
     return {}
 
 

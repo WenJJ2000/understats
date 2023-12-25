@@ -14,13 +14,24 @@ BASE_URL=http://127.0.0.1:8000/
 
 ## Step 2
 
+Create a virtual environment
+and start your virtual environment
+
+```bash
+py -m venv .venv
+
+source .venv/Scripts/activate
+```
+
+## Step 3
+
 install required files using
 
 ```bash
 pip install -r req.txt
 ```
 
-## Step 3
+## Step 4
 
 Run server with the following.
 
