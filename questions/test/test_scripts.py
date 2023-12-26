@@ -18,9 +18,9 @@ from questions.scripts import (
     two_sample_t_uneq_var,
     wilcoxon_rank_test,
     ztest,
-    rank_correlation_method,
-    person_correlation,
-    kruskal_wallis_test,
+    rank_correlation,
+    pearson_correlation,
+    kruskal_wallies_test,
     contingency_table,
     kappa_statistic,
     multiple_regression,
@@ -168,26 +168,26 @@ class ScriptsTest(SimpleTestCase):
         # self.assertAlmostEquals(ans["intercept"], 0)
         print("one_sample_possion Check")
 
-    def test_rank_correlation_method(self):
-        ans = rank_correlation_method(self.data, 0.9, 1, 0)
-        print("Scripts : testing rank_correlation_methods")
+    def test_rank_correlation(self):
+        ans = rank_correlation(self.data, 0.9, 1, 0)
+        print("Scripts : testing rank_correlation")
         # self.assertEquals(ans["coefficient_of_determination"], 1)
         # self.assertAlmostEquals(ans["intercept"], 0)
-        print("rank_correlation_methods Check")
+        print("rank_correlation Check")
 
-    def test_person_correlation(self):
-        ans = person_correlation(self.data, 0.9, 1, 0)
-        print("Scripts : testing person_correlation")
+    def test_pearson_correlation(self):
+        ans = pearson_correlation(self.data, 0.9, 1, 0)
+        print("Scripts : testing pearson_correlation")
         # self.assertEquals(ans["coefficient_of_determination"], 1)
         # self.assertAlmostEquals(ans["intercept"], 0)
-        print("person_correlation Check")
+        print("pearson_correlation Check")
 
-    def test_kruskal_wallis_test(self):
-        ans = kruskal_wallis_test(self.data, 0.9, 1, 0)
-        print("Scripts : testing kruskal_wallis_test")
+    def test_kruskal_wallies_test(self):
+        ans = kruskal_wallies_test(self.data, 0.9, 1, 0)
+        print("Scripts : testing kruskal_wallies_test")
         # self.assertEquals(ans["coefficient_of_determination"], 1)
         # self.assertAlmostEquals(ans["intercept"], 0)
-        print("kruskal_wallis_test Check")
+        print("kruskal_wallies_test Check")
 
     def test_contingency_table(self):
         ans = contingency_table(self.data, 0.9, 1, 0)

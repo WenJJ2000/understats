@@ -1,8 +1,10 @@
 import csv
 from matplotlib import pyplot as plt
 from scipy import stats
+from scipy.stats import spearmanr
+from sklearn.metrics import cohen_kappa_score
 from statsmodels.stats.contingency_tables import mcnemar
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 import numpy as np
 import pandas as pd
 import json
@@ -337,16 +339,26 @@ def one_sample_t_test(data, confidence, ended, stat):
     return {"p - vlaue": p_value, "T stat": t_stat, "T crit": t_crit, "result": result}
 
 
-def rank_correlation_method(data, confidence, ended, stat):
-    return
+def rank_correlation(data, confidence, ended, stat):
+    data1 = data[0]
+    data2 = data[1]
+    coef, p = spearmanr(data1, data2)
+    alpha = 1 - confidence
+    result = "Fail to reject" if p > alpha else "reject stat"
+    return {"correlation coefficient": coef, "p_value": p, "result": result}
 
 
-def person_correlation(data, confidence, ended, stat):
-    return
+def pearson_correlation(data, confidence, ended, stat):
+    x = data[0]
+    y = data[1]
+    r = np.corrcoef(x, y)
+    return {"coefficient": r}
 
 
-def kruskal_wallis_test(data, confidence, ended, stat):
-    return
+def kruskal_wallies_test(data, confidence, ended, stat):
+    results = stats.kruskal(**data)
+
+    return {"stat": results.statistic, "p_value": results.pvalue}
 
 
 def contingency_table(data, confidence, ended, stat):
@@ -354,15 +366,26 @@ def contingency_table(data, confidence, ended, stat):
 
 
 def kappa_statistic(data, confidence, ended, stat):
-    return
+    data1 = data[0]
+    data2 = data[1]
+    kappa_stat = cohen_kappa_score(data1, data2)
+    return {"Cohen's Kappa:": kappa_stat}
 
 
 def multiple_regression(data, confidnce, ended, stat):
-    return
+    regr = LinearRegression()
+    regr.fit(data[0], data[1])
+    coef = regr.coef_
+    return {"coefficient": coef}
 
 
 def multiple_log_regression(data, confidnce, ended, stat):
-    return
+    x = data[0]
+    y = data[1]
+    model = LogisticRegression(multi_class="multinomial", solver="lbfgs")
+    model.fit(x, y)
+    coeff = model.coef_
+    return {"coeff": coeff}
 
 
 def one_sample_incidence_test(data, confidnce, ended, stat):
@@ -394,14 +417,14 @@ mp = {
     "two_way_anova": lambda data: ANOVA(**data),
     "one_sample_t_test": lambda data: one_sample_t_test(**data),
     "one_sample_possion": lambda data: one_sample_possion_test(**data),
+    "rank_correlation": lambda data: rank_correlation(**data),
     #
     #
     #
-    "rank_correlation_method": lambda data: rank_correlation_method(**data),
-    "person_correlation": lambda data: person_correlation(**data),
-    "kruskal_wallis_test": lambda data: kruskal_wallis_test(**data),
+    "pearson_correlation": lambda data: pearson_correlation(**data),
+    "kruskal_wallies_test": lambda data: kruskal_wallies_test(**data),
     "contingency_table": lambda data: contingency_table(**data),
-    "kappa_statistic": lambda data: kappa_statistic(**data),
+    "kappa_stat": lambda data: kappa_statistic(**data),
     "multiple_regression": lambda data: multiple_regression(**data),
     "multiple_log_regression": lambda data: multiple_log_regression(**data),
     "one_sample_incidence_test": lambda data: one_sample_incidence_test(**data),
