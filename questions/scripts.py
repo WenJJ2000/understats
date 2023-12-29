@@ -388,12 +388,8 @@ def multiple_log_regression(data, confidnce, ended, stat):
     return {"coeff": coeff}
 
 
-def one_sample_incidence_test(data, confidnce, ended, stat):
-    return
-
-
-def log_rank_test(data, confidnce, ended, stat):
-    return
+# def log_rank_test(data, confidnce, ended, stat):
+#     return
 
 
 mp = {
@@ -427,7 +423,7 @@ mp = {
     "kappa_stat": lambda data: kappa_statistic(**data),
     "multiple_regression": lambda data: multiple_regression(**data),
     "multiple_log_regression": lambda data: multiple_log_regression(**data),
-    "one_sample_incidence_test": lambda data: one_sample_incidence_test(**data),
+    "one_sample_incidence_test": lambda data: one_sample_t_test(**data),
     "log_rank_test": lambda data: log_rank_test(**data),
 }
 

@@ -4,3 +4,11 @@ December 2022 - January 2023 (Wang Junwei)
 - Linked all the questions inside the database based on their id
 - Developed the decision tree structure on the webpage where the user will be able to reach the final answer based on a series of their own inputs (Subsequent questions will show based on their input)
 - Coded it such that previous questions will all stay on the screen with the next question at the bottom 
+
+August 2023 - December 2023 (Wen Jun Jie)
+- created front end with links to pages
+- Created SQLite backend with required data for flowchart and linked each part of flowchart to the next bit.
+- Linked flowchart endpoints to functions called
+- Fixed data segregation and introduced git ignore and readme
+- Fixed dependencies and scripts installation
+- Created and initialised unit-testing for functions and django functions

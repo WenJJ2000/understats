@@ -224,9 +224,9 @@ class ScriptsTest(SimpleTestCase):
         # self.assertAlmostEquals(ans["intercept"], 0)
         print("one_sample_incidence_test Check")
 
-    def test_log_rank_test(self):
-        ans = log_rank_test(self.data, 0.9, 1, 0)
-        print("Scripts : testing log_rank_test")
-        # self.assertEquals(ans["coefficient_of_determination"], 1)
-        # self.assertAlmostEquals(ans["intercept"], 0)
-        print("log_rank_test Check")
+    # def test_log_rank_test(self):
+    #     ans = log_rank_test(self.data, 0.9, 1, 0)
+    #     print("Scripts : testing log_rank_test")
+    #     # self.assertEquals(ans["coefficient_of_determination"], 1)
+    #     # self.assertAlmostEquals(ans["intercept"], 0)
+    #     print("log_rank_test Check")
