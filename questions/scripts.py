@@ -414,9 +414,6 @@ mp = {
     "one_sample_t_test": lambda data: one_sample_t_test(**data),
     "one_sample_possion": lambda data: one_sample_possion_test(**data),
     "rank_correlation": lambda data: rank_correlation(**data),
-    #
-    #
-    #
     "pearson_correlation": lambda data: pearson_correlation(**data),
     "kruskal_wallies_test": lambda data: kruskal_wallies_test(**data),
     "contingency_table": lambda data: contingency_table(**data),
@@ -424,7 +421,7 @@ mp = {
     "multiple_regression": lambda data: multiple_regression(**data),
     "multiple_log_regression": lambda data: multiple_log_regression(**data),
     "one_sample_incidence_test": lambda data: one_sample_t_test(**data),
-    "log_rank_test": lambda data: log_rank_test(**data),
+    # "log_rank_test": lambda data: log_rank_test(**data),
 }
 
 
